@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Piano Leren</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.3/build/cjs/vexflow.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/opensheetmusicdisplay@1.8.7/build/opensheetmusicdisplay.min.js"></script>
+</head>
+<body class="main-nav-active">
+  <header>
+    <div id="header-main">
+      <h1>Piano Leren</h1>
+    </div>
+    <!-- Tool back bar — zit in header zodat het nooit overlapt -->
+    <div id="tool-back-bar" hidden>
+      <button id="tool-back-btn">← Terug</button>
+      <span id="tool-back-title"></span>
+    </div>
+    <!-- Hidden nav: all 17 buttons intact for app.js querySelector calls -->
+    <nav id="tabs" style="display:none">
+      <button data-tab="learn" class="active">Noot leren</button>
+      <button data-tab="songs">Liedjes</button>
+      <button data-tab="lessons">Lessen</button>
+      <button data-tab="technique">Techniek</button>
+      <button data-tab="ear">Gehoor</button>
+      <button data-tab="metro">Metronoom</button>
+      <button data-tab="theory">Theorie</button>
+      <button data-tab="sightread">Bladlezen</button>
+      <button data-tab="rhythm">Ritme</button>
+      <button data-tab="dictee">Dictee</button>
+      <button data-tab="chords">Lead Sheet</button>
+      <button data-tab="transpose">Transpositie</button>
+      <button data-tab="circle">Kwintencirkel</button>
+      <button data-tab="inversions">Omkeringen</button>
+      <button data-tab="styles">Stijlen</button>
+      <button data-tab="duet">Duet</button>
+      <button data-tab="sheet">Bladmuziek</button>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- ====================================================
+         MAIN HOME — Dashboard
+         ==================================================== -->
+    <section id="main-home" class="main-section">
+      <div class="dash-progress-card">
+        <p class="dash-label">Jouw voortgang</p>
+        <div class="dash-bar"><div id="dash-bar-fill" class="dash-bar-fill"></div></div>
+        <p id="dash-count" class="dash-count"></p>
+      </div>
+
+      <div id="dash-next" class="dash-next-card" hidden></div>
+
+      <p class="section-label">Aanbevolen oefeningen</p>
+      <div id="dash-recs" class="tool-grid"></div>
+    </section>
+
+    <!-- ====================================================
+         MAIN LESSONS — Lessen + Liedjes
+         ==================================================== -->
+    <section id="main-lessons" class="main-section" hidden>
+      <div class="lessons-subnav">
+        <button class="lessons-sub-btn active" data-sub="lessons">📖 Lessen</button>
+        <button class="lessons-sub-btn" data-sub="songs">🎵 Liedjes</button>
+      </div>
+
+      <section id="tab-lessons" class="tab active">
+        <ol id="lesson-list"></ol>
+      </section>
+
+      <section id="tab-songs" class="tab">
+        <ul id="song-list"></ul>
+        <div id="song-player" hidden>
+          <button id="song-back">← Terug</button>
+          <h2 id="song-title"></h2>
+          <div id="song-staff"></div>
+          <div id="song-keyboard"></div>
+          <div class="controls">
+            <button id="song-start">Start</button>
+            <span id="song-progress">0 / 0</span>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- ====================================================
+         MAIN PRACTICE — Oefenen tool-grid
+         ==================================================== -->
+    <section id="main-practice" class="main-section" hidden>
+      <p class="section-label">Oefenen</p>
+      <div id="practice-grid" class="tool-grid">
+        <div class="tool-card" data-tool="learn" data-from="practice">
+          <span class="tool-card-icon">🎹</span>
+          <span class="tool-card-name">Noot leren</span>
+          <span class="tool-card-desc">Herken noten op de balk via de microfoon</span>
+        </div>
+        <div class="tool-card" data-tool="technique" data-from="practice">
+          <span class="tool-card-icon">🏋️</span>
+          <span class="tool-card-name">Techniek</span>
+          <span class="tool-card-desc">Toonladders, akkoorden en vingeroefeningen</span>
+        </div>
+        <div class="tool-card" data-tool="ear" data-from="practice">
+          <span class="tool-card-icon">👂</span>
+          <span class="tool-card-name">Gehoor</span>
+          <span class="tool-card-desc">Herken intervallen en akkoordkwaliteiten</span>
+        </div>
+        <div class="tool-card" data-tool="sightread" data-from="practice">
+          <span class="tool-card-icon">📄</span>
+          <span class="tool-card-name">Bladlezen</span>
+          <span class="tool-card-desc">Lees frasen op tempo</span>
+        </div>
+        <div class="tool-card" data-tool="rhythm" data-from="practice">
+          <span class="tool-card-icon">🥁</span>
+          <span class="tool-card-name">Ritme</span>
+          <span class="tool-card-desc">Tik ritmische patronen mee</span>
+        </div>
+        <div class="tool-card" data-tool="dictee" data-from="practice">
+          <span class="tool-card-icon">✍️</span>
+          <span class="tool-card-name">Dictee</span>
+          <span class="tool-card-desc">Noteer de melodie die je hoort</span>
+        </div>
+        <div class="tool-card" data-tool="chords" data-from="practice">
+          <span class="tool-card-icon">🎼</span>
+          <span class="tool-card-name">Lead Sheet</span>
+          <span class="tool-card-desc">Leer akkoorden uit hun symbool</span>
+        </div>
+        <div class="tool-card" data-tool="duet" data-from="practice">
+          <span class="tool-card-icon">🤝</span>
+          <span class="tool-card-name">Duet</span>
+          <span class="tool-card-desc">App speelt linkerhand, jij rechterhand</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================
+         MAIN TOOLS — Gereedschap tool-grid
+         ==================================================== -->
+    <section id="main-tools" class="main-section" hidden>
+      <p class="section-label">Gereedschap</p>
+      <div id="tools-grid" class="tool-grid">
+        <div class="tool-card" data-tool="metro" data-from="tools">
+          <span class="tool-card-icon">⏱️</span>
+          <span class="tool-card-name">Metronoom</span>
+          <span class="tool-card-desc">Stabiel tempo leren houden</span>
+        </div>
+        <div class="tool-card" data-tool="theory" data-from="tools">
+          <span class="tool-card-icon">📐</span>
+          <span class="tool-card-name">Theorie</span>
+          <span class="tool-card-desc">Progressies en kwiz</span>
+        </div>
+        <div class="tool-card" data-tool="circle" data-from="tools">
+          <span class="tool-card-icon">⭕</span>
+          <span class="tool-card-name">Kwintencirkel</span>
+          <span class="tool-card-desc">Verken toonsoorten en hun relaties</span>
+        </div>
+        <div class="tool-card" data-tool="inversions" data-from="tools">
+          <span class="tool-card-icon">🔄</span>
+          <span class="tool-card-name">Omkeringen</span>
+          <span class="tool-card-desc">Akkoord-liggingen en voice leading</span>
+        </div>
+        <div class="tool-card" data-tool="transpose" data-from="tools">
+          <span class="tool-card-icon">🎚️</span>
+          <span class="tool-card-name">Transpositie</span>
+          <span class="tool-card-desc">Speel melodieën in andere toonsoorten</span>
+        </div>
+        <div class="tool-card" data-tool="styles" data-from="tools">
+          <span class="tool-card-icon">🎨</span>
+          <span class="tool-card-name">Stijlen</span>
+          <span class="tool-card-desc">Barok, klassiek, romantiek en meer</span>
+        </div>
+        <div class="tool-card" data-tool="sheet" data-from="tools">
+          <span class="tool-card-icon">📑</span>
+          <span class="tool-card-name">Bladmuziek</span>
+          <span class="tool-card-desc">Laad MusicXML en speel mee</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================
+         TOOL PANELS (all hidden by default)
+         ==================================================== -->
+
+    <section id="tab-learn" class="tab">
+      <div class="status-bar">
+        <button id="mic-toggle">🎤 Microfoon starten</button>
+        <span id="mic-status">mic uit</span>
+        <span id="detected">—</span>
+      </div>
+      <div id="staff"></div>
+      <div id="keyboard"></div>
+      <div class="controls">
+        <button id="new-note">Nieuwe noot</button>
+        <label>
+          Bereik:
+          <select id="range">
+            <option value="easy">C4 – C5 (makkelijk)</option>
+            <option value="middle">C3 – C6</option>
+            <option value="full">A0 – C8 (alles)</option>
+          </select>
+        </label>
+        <span id="score">0 / 0</span>
+      </div>
+      <p class="hint">Speel de getoonde noot op je piano. De app luistert mee via de microfoon.</p>
+    </section>
+
+    <section id="tab-technique" class="tab">
+      <div class="controls">
+        <select id="tech-select"></select>
+        <label>Hand:
+          <select id="tech-hand">
+            <option value="rh">Rechterhand</option>
+            <option value="lh">Linkerhand</option>
+            <option value="both">Beide (LH → RH)</option>
+          </select>
+        </label>
+        <button id="tech-play-demo" class="ghost">🔊 Voorbeeld</button>
+      </div>
+      <h3 id="tech-name" style="margin:0.5rem 0 0.2rem;"></h3>
+      <p id="tech-desc" class="hint" style="margin-top:0;"></p>
+      <div id="tech-staff"></div>
+      <div id="tech-keyboard"></div>
+      <div class="controls">
+        <button id="tech-start">▶ Oefenen (speel mee)</button>
+        <button id="tech-metro-toggle" class="ghost">🥁 Metronoom</button>
+        <label>BPM:
+          <input type="range" id="tech-bpm" min="40" max="200" value="70" />
+          <span id="tech-bpm-val">70</span>
+        </label>
+        <span id="tech-progress">—</span>
+      </div>
+    </section>
+
+    <section id="tab-ear" class="tab">
+      <div class="ear-mode-switch">
+        <button data-ear-mode="interval" class="active">Intervallen</button>
+        <button data-ear-mode="chord">Akkoord-kwaliteit</button>
+      </div>
+
+      <div id="ear-interval" class="ear-panel">
+        <div class="controls">
+          <label>Niveau:
+            <select id="ear-level">
+              <option value="beginner">Beginner (5 intervallen)</option>
+              <option value="intermediate">Intermediate (9)</option>
+              <option value="all">Alles (13)</option>
+            </select>
+          </label>
+          <label>Modus:
+            <select id="ear-play-mode">
+              <option value="melodic">Melodisch (na elkaar)</option>
+              <option value="harmonic">Harmonisch (tegelijk)</option>
+            </select>
+          </label>
+        </div>
+        <div class="ear-main">
+          <button id="ear-play" class="big-btn">🔊 Speel interval</button>
+          <div id="ear-options" class="ear-options"></div>
+          <div id="ear-feedback" class="ear-feedback">—</div>
+          <div class="controls">
+            <button id="ear-next" class="ghost">Nieuwe vraag</button>
+            <span id="ear-score">0 / 0</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="ear-chord" class="ear-panel" hidden>
+        <div class="controls">
+          <label>Niveau:
+            <select id="ear-chord-level">
+              <option value="beginner">Beginner (majeur/mineur)</option>
+              <option value="all">Alles (4 kwaliteiten)</option>
+            </select>
+          </label>
+        </div>
+        <div class="ear-main">
+          <button id="ear-chord-play" class="big-btn">🔊 Speel akkoord</button>
+          <div id="ear-chord-options" class="ear-options"></div>
+          <div id="ear-chord-feedback" class="ear-feedback">—</div>
+          <div class="controls">
+            <button id="ear-chord-next" class="ghost">Nieuwe vraag</button>
+            <span id="ear-chord-score">0 / 0</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-metro" class="tab">
+      <div class="metro-container">
+        <div id="metro-display" class="metro-display">
+          <div class="metro-beats" id="metro-beats"></div>
+          <div class="metro-bpm-display"><span id="metro-bpm-big">80</span> <small>BPM</small></div>
+        </div>
+        <button id="metro-toggle" class="big-btn">▶ Start</button>
+        <div class="controls">
+          <label>Tempo:
+            <input type="range" id="metro-bpm" min="30" max="240" value="80" />
+            <span id="metro-bpm-val">80</span>
+          </label>
+        </div>
+        <div class="controls">
+          <label>Maatsoort:
+            <select id="metro-meter">
+              <option value="2">2/4</option>
+              <option value="3">3/4</option>
+              <option value="4" selected>4/4</option>
+              <option value="5">5/4</option>
+              <option value="6">6/8</option>
+            </select>
+          </label>
+          <label>Tempo-markering:
+            <select id="metro-preset">
+              <option value="40">Grave (40)</option>
+              <option value="50">Largo (50)</option>
+              <option value="60">Lento (60)</option>
+              <option value="72">Adagio (72)</option>
+              <option value="80" selected>Andante (80)</option>
+              <option value="108">Moderato (108)</option>
+              <option value="120">Allegro (120)</option>
+              <option value="160">Vivace (160)</option>
+              <option value="180">Presto (180)</option>
+            </select>
+          </label>
+        </div>
+        <p class="hint">Een metronoom is niet optioneel. Elk serieus stuk oefen je eerst traag (60–80 BPM) en voer je stapsgewijs op. Begin altijd met de metronoom, ook als je 'm niet nodig denkt te hebben.</p>
+      </div>
+    </section>
+
+    <section id="tab-theory" class="tab">
+      <div class="ear-mode-switch">
+        <button data-theory-mode="progressions" class="active">Progressies</button>
+        <button data-theory-mode="quiz">Quiz</button>
+      </div>
+
+      <div id="theory-progressions" class="ear-panel">
+        <div class="controls">
+          <label>Progressie:
+            <select id="theory-prog-select"></select>
+          </label>
+          <label>Toonsoort:
+            <select id="theory-key-select"></select>
+          </label>
+          <button id="theory-prog-play" class="big-btn">🔊 Speel progressie</button>
+        </div>
+        <h3 id="theory-prog-name" style="margin:0.6rem 0 0.2rem;"></h3>
+        <p id="theory-prog-desc" class="hint" style="margin-top:0;"></p>
+        <div id="theory-prog-chords" class="theory-chords"></div>
+        <div id="theory-keyboard"></div>
+      </div>
+
+      <div id="theory-quiz" class="ear-panel" hidden>
+        <div class="ear-main">
+          <div id="quiz-question" class="quiz-question">Druk op "Nieuwe vraag" om te beginnen.</div>
+          <div id="quiz-options" class="ear-options"></div>
+          <div id="quiz-feedback" class="ear-feedback">—</div>
+          <div class="controls">
+            <button id="quiz-next" class="ghost">Nieuwe vraag</button>
+            <span id="quiz-score">0 / 0</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-sightread" class="tab">
+      <div class="controls">
+        <label>Toonsoort:
+          <select id="sr-key"></select>
+        </label>
+        <label>Niveau:
+          <select id="sr-level"></select>
+        </label>
+        <label>BPM:
+          <input type="range" id="sr-bpm" min="40" max="140" value="70" />
+          <span id="sr-bpm-val">70</span>
+        </label>
+      </div>
+      <div id="sr-staff"></div>
+      <div id="sr-keyboard"></div>
+      <div class="controls">
+        <button id="sr-new">Nieuwe frase</button>
+        <button id="sr-start">▶ Start (met klik)</button>
+        <button id="sr-demo" class="ghost">🔊 Voorspelen</button>
+        <span id="sr-progress">—</span>
+      </div>
+      <p class="hint">Lees de hele frase vooruit voordat je begint. Klik start en speel mee met de metronoom — houd je ogen 1 noot voor op je handen.</p>
+    </section>
+
+    <section id="tab-rhythm" class="tab">
+      <div class="controls">
+        <label>Patroon:
+          <select id="rhy-select"></select>
+        </label>
+        <label>BPM:
+          <input type="range" id="rhy-bpm" min="40" max="160" value="80" />
+          <span id="rhy-bpm-val">80</span>
+        </label>
+        <label>Maten:
+          <select id="rhy-measures">
+            <option value="2">2 maten</option>
+            <option value="4" selected>4 maten</option>
+            <option value="8">8 maten</option>
+          </select>
+        </label>
+      </div>
+      <p id="rhy-desc" class="hint"></p>
+      <div id="rhy-grid" class="rhythm-grid"></div>
+      <div class="rhy-tap-area">
+        <button id="rhy-tap" class="rhy-tap-btn">TIK</button>
+        <p class="hint">Tik met de knop, spatie-toets of tik op het scherm mee op de maat.</p>
+      </div>
+      <div class="controls">
+        <button id="rhy-start">▶ Start metronoom</button>
+        <button id="rhy-stop" class="ghost">⏹ Stop</button>
+        <button id="rhy-demo" class="ghost">🔊 Voorbeeld</button>
+        <span id="rhy-score">—</span>
+      </div>
+      <div id="rhy-feedback" class="rhythm-feedback"></div>
+    </section>
+
+    <section id="tab-dictee" class="tab">
+      <div class="controls">
+        <label>Toonsoort:
+          <select id="dic-key"></select>
+        </label>
+        <label>Niveau:
+          <select id="dic-level"></select>
+        </label>
+        <label>BPM:
+          <input type="range" id="dic-bpm" min="50" max="120" value="80" />
+          <span id="dic-bpm-val">80</span>
+        </label>
+      </div>
+      <div id="dic-keyboard"></div>
+      <div class="ear-main">
+        <button id="dic-play" class="big-btn">🔊 Speel frase</button>
+        <p id="dic-hint" class="hint" style="margin-top:0.8rem;"></p>
+        <div id="dic-feedback" class="ear-feedback">—</div>
+        <div class="controls">
+          <button id="dic-new" class="ghost">Nieuwe frase</button>
+          <button id="dic-reveal" class="ghost">👁 Toon noten</button>
+          <span id="dic-score">0 / 0</span>
+        </div>
+        <div id="dic-notes-reveal" hidden></div>
+      </div>
+    </section>
+
+    <section id="tab-chords" class="tab">
+      <div class="ear-mode-switch">
+        <button data-chord-mode="learn" class="active">Leren</button>
+        <button data-chord-mode="drill">Drill</button>
+      </div>
+
+      <div id="chords-learn" class="ear-panel">
+        <div class="controls">
+          <label>Grondtoon:
+            <select id="ch-root"></select>
+          </label>
+          <label>Type:
+            <select id="ch-type"></select>
+          </label>
+          <button id="ch-demo" class="ghost">🔊 Speel akkoord</button>
+          <button id="ch-arp" class="ghost">🎵 Arpeggio</button>
+        </div>
+        <div class="chord-display">
+          <div id="ch-symbol" class="chord-symbol-big">C</div>
+          <div id="ch-name" class="chord-name-sub"></div>
+          <div id="ch-intervals" class="chord-intervals"></div>
+        </div>
+        <div id="ch-keyboard"></div>
+      </div>
+
+      <div id="chords-drill" class="ear-panel" hidden>
+        <div class="controls">
+          <label>Niveau:
+            <select id="ch-level"></select>
+          </label>
+          <button id="ch-new" class="ghost">Nieuw akkoord</button>
+          <span id="ch-score">0 / 0</span>
+        </div>
+        <div class="chord-display">
+          <div id="ch-drill-symbol" class="chord-symbol-big">—</div>
+          <div id="ch-drill-hint" class="hint">Druk op "Nieuw akkoord" om te beginnen.</div>
+        </div>
+        <div id="ch-drill-keyboard"></div>
+        <div class="controls">
+          <button id="ch-drill-demo" class="ghost">🔊 Demo</button>
+          <button id="ch-drill-reveal" class="ghost">👁 Toon</button>
+          <span id="ch-drill-progress">—</span>
+        </div>
+        <div id="ch-drill-feedback" class="ear-feedback">—</div>
+      </div>
+    </section>
+
+    <section id="tab-transpose" class="tab">
+      <div class="controls">
+        <label>Melodie:
+          <select id="tp-song"></select>
+        </label>
+        <label>Van:
+          <select id="tp-from"></select>
+        </label>
+        <label>Naar:
+          <select id="tp-to"></select>
+        </label>
+        <button id="tp-demo" class="ghost">🔊 Origineel</button>
+        <button id="tp-demo-target" class="ghost">🔊 Getransponeerd</button>
+      </div>
+      <div id="tp-interval-label" class="tp-interval-label"></div>
+      <div id="tp-staff"></div>
+      <div id="tp-keyboard"></div>
+      <div class="controls">
+        <button id="tp-start">▶ Speel mee (getransponeerd)</button>
+        <button id="tp-drill" class="ghost">🎲 Willekeurige toonsoort</button>
+        <span id="tp-progress">—</span>
+      </div>
+      <p class="hint">Kijk naar de originele melodie maar speel hem in de nieuwe toonsoort. Houd de melodische <em>beweging</em> in je hoofd, niet de vingerposities.</p>
+    </section>
+
+    <section id="tab-circle" class="tab">
+      <div id="circle-container" class="circle-container"></div>
+      <div id="circle-info" class="circle-info ear-panel">
+        <div class="controls">
+          <button id="circle-play-scale" class="ghost">🔊 Toonladder</button>
+          <button id="circle-play-prog" class="ghost">🎵 I–IV–V–I</button>
+          <button id="circle-play-rel" class="ghost">🎹 Rel. mineur</button>
+        </div>
+        <div id="circle-keyboard"></div>
+        <p id="circle-hint" class="hint">Klik op een segment om die toonsoort te verkennen. Geel = geselecteerd · Oranje rand = kwintencirkel-buren (meest verwante toonsoorten).</p>
+      </div>
+    </section>
+
+    <section id="tab-inversions" class="tab">
+      <div class="ear-mode-switch">
+        <button data-inv-mode="learn" class="active">Leren</button>
+        <button data-inv-mode="drill">Drill</button>
+        <button data-inv-mode="voiceleading">Voice Leading</button>
+      </div>
+
+      <div id="inv-learn" class="ear-panel">
+        <div class="controls">
+          <label>Grondtoon: <select id="inv-root"></select></label>
+          <label>Type: <select id="inv-type"></select></label>
+          <label>Ligging:
+            <select id="inv-num">
+              <option value="0">Grondligging</option>
+              <option value="1">1e omkering</option>
+              <option value="2">2e omkering</option>
+              <option value="3">3e omkering</option>
+            </select>
+          </label>
+          <button id="inv-demo" class="ghost">🔊 Speel</button>
+          <button id="inv-arp" class="ghost">🎵 Arpeggio</button>
+        </div>
+        <div class="chord-display">
+          <div id="inv-symbol" class="chord-symbol-big">C</div>
+          <div id="inv-name" class="chord-name-sub"></div>
+          <div id="inv-bass-desc" class="chord-intervals"></div>
+        </div>
+        <div id="inv-keyboard"></div>
+      </div>
+
+      <div id="inv-drill" class="ear-panel" hidden>
+        <div class="controls">
+          <label>Niveau: <select id="inv-level"></select></label>
+          <button id="inv-new" class="ghost">Nieuw akkoord</button>
+          <span id="inv-score">0 / 0</span>
+        </div>
+        <div class="chord-display">
+          <div id="inv-drill-symbol" class="chord-symbol-big">—</div>
+          <div id="inv-drill-name" class="chord-name-sub"></div>
+          <div id="inv-drill-hint" class="hint">Speel het akkoord van laag naar hoog (arpeggio).</div>
+        </div>
+        <div id="inv-drill-keyboard"></div>
+        <div class="controls">
+          <button id="inv-drill-demo" class="ghost">🔊 Demo</button>
+          <button id="inv-drill-reveal" class="ghost">👁 Toon</button>
+          <span id="inv-drill-progress">—</span>
+        </div>
+        <div id="inv-drill-feedback" class="ear-feedback">—</div>
+      </div>
+
+      <div id="inv-voiceleading" class="ear-panel" hidden>
+        <div class="controls">
+          <label>Progressie: <select id="inv-vl-prog"></select></label>
+          <label>Toonsoort: <select id="inv-vl-key"></select></label>
+          <button id="inv-vl-play">🔊 Speel smooth</button>
+          <button id="inv-vl-play-root" class="ghost">⚡ Speel grondligging</button>
+        </div>
+        <p class="hint">De app kiest automatisch de beste omkering voor elke akkoordovergang — minimale vingerbeweging, maximale muzikaliteit.</p>
+        <div id="inv-vl-chords" class="theory-chords"></div>
+        <div id="inv-vl-keyboard"></div>
+      </div>
+    </section>
+
+    <section id="tab-styles" class="tab">
+      <div id="styles-nav" class="styles-nav"></div>
+      <div id="styles-content"></div>
+    </section>
+
+    <section id="tab-duet" class="tab">
+      <div class="controls">
+        <label>Progressie: <select id="duet-prog"></select></label>
+        <label>Toonsoort: <select id="duet-key"></select></label>
+        <label>LH-patroon: <select id="duet-pattern"></select></label>
+        <label>BPM:
+          <input type="range" id="duet-bpm" min="40" max="160" value="80" />
+          <span id="duet-bpm-val">80</span>
+        </label>
+      </div>
+      <p id="duet-pattern-desc" class="hint"></p>
+      <div id="duet-keyboard"></div>
+      <div class="controls">
+        <button id="duet-toggle" class="big-btn">▶ Start linkerhand</button>
+        <span id="duet-status">gestopt</span>
+      </div>
+      <p class="hint">De app speelt de linkerhand — jij speelt de rechterhand. Begin met geblokte akkoorden en bouw op naar Alberti-bas of stride. Gebruik de microfoon voor noot-feedback.</p>
+    </section>
+
+    <section id="tab-sheet" class="tab">
+      <div class="controls">
+        <label class="file-label">
+          <input type="file" id="sheet-file" accept=".xml,.musicxml,.mxl" hidden />
+          <span class="btn-like">📄 Bladmuziek openen (MusicXML / .mxl)</span>
+        </label>
+        <button id="sheet-play">Speel mee</button>
+        <button id="sheet-reset" class="ghost">Reset</button>
+        <span id="sheet-progress">—</span>
+      </div>
+      <div id="sheet-info" class="hint">Kies een MusicXML-bestand (.xml / .musicxml / .mxl). De app toont de partituur, markeert de volgende noot en luistert via de microfoon mee.</div>
+      <div id="sheet-keyboard"></div>
+      <div id="sheet-display"></div>
+    </section>
+
+  </main>
+
+  <!-- ====================================================
+       LESSON COMPLETE OVERLAY
+       ==================================================== -->
+  <div id="lesson-overlay" hidden>
+    <div class="lc-card">
+      <div class="lc-icon">✓</div>
+      <h2 id="lc-title"></h2>
+      <p id="lc-goal" class="hint"></p>
+      <p class="lc-recs-label">Ga nu verder met:</p>
+      <div id="lc-recs"></div>
+      <button id="lc-back" class="ghost">← Terug naar lessen</button>
+    </div>
+  </div>
+
+  <!-- ====================================================
+       BOTTOM NAVIGATION
+       ==================================================== -->
+  <nav id="bottom-nav">
+    <button class="nav-item active" data-main="home">
+      <span class="nav-icon">🏠</span>
+      <small>Home</small>
+    </button>
+    <button class="nav-item" data-main="lessons">
+      <span class="nav-icon">📖</span>
+      <small>Lessen</small>
+    </button>
+    <button class="nav-item" data-main="practice">
+      <span class="nav-icon">🎹</span>
+      <small>Oefenen</small>
+    </button>
+    <button class="nav-item" data-main="tools">
+      <span class="nav-icon">🔧</span>
+      <small>Gereedschap</small>
+    </button>
+  </nav>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>

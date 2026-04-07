@@ -1,0 +1,1222 @@
+/* Zorg dat [hidden] altijd display:none is, ook als CSS display overschrijft */
+[hidden] { display: none !important; }
+
+:root {
+  --bg: #faf8f4;
+  --fg: #1c1a17;
+  --muted: #6b665e;
+  --accent: #d64933;
+  --accent-soft: #f7d9d3;
+  --key-white: #ffffff;
+  --key-white-border: #222;
+  --key-black: #1a1a1a;
+  --key-highlight: #ffe066;
+  --key-correct: #7bd389;
+  --key-wrong: #f08080;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #f0ede8;
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgba(214,73,51,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(123,211,137,0.07) 0%, transparent 50%);
+  background-attachment: fixed;
+  color: var(--fg);
+  min-height: 100vh;
+  -webkit-tap-highlight-color: transparent;
+}
+
+header {
+  padding: env(safe-area-inset-top) 1.2rem 0;
+  background: rgba(250, 248, 244, 0.82);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+header h1 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0.65rem 0 0.5rem;
+}
+
+nav#tabs {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+}
+
+nav#tabs button {
+  background: none;
+  border: none;
+  padding: 0.8rem 1rem;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--muted);
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+nav#tabs button.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+main {
+  padding: 0;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.tab { display: none; }
+.tab.active {
+  display: block;
+  padding: 1rem 1rem calc(64px + env(safe-area-inset-bottom) + 24px);
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+#mic-status {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+#detected {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-left: auto;
+}
+
+button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 0.65rem 1.1rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  transition: transform 0.1s, opacity 0.1s;
+}
+
+button:active { transform: scale(0.97); opacity: 0.85; }
+button:disabled { opacity: 0.4; }
+
+button.ghost {
+  background: rgba(214, 73, 51, 0.08);
+  color: var(--accent);
+  border: none;
+}
+
+#staff, #song-staff {
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  border: 0.5px solid rgba(255,255,255,0.9);
+  padding: 1rem 0.5rem;
+  margin-bottom: 1rem;
+  min-height: 160px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: auto;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+
+#keyboard, #song-keyboard {
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  border: 0.5px solid rgba(255,255,255,0.9);
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+
+.controls {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.controls label {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+#song-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#song-list li {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 0.6rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#song-list li .difficulty {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+#lesson-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+#lesson-list li.lesson-item {
+  background: #fff;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.5rem;
+  margin-left: 1rem;
+  cursor: pointer;
+  border-left: 4px solid transparent;
+}
+
+#lesson-list li.lesson-item:hover {
+  border-left-color: var(--accent);
+}
+
+#lesson-list li.lesson-item.done {
+  opacity: 0.65;
+  border-left-color: var(--key-correct);
+}
+
+#lesson-list li.lesson-item.done::after {
+  content: " ✓";
+  color: var(--key-correct);
+  font-weight: bold;
+}
+
+#lesson-list li.lesson-item .lesson-goal {
+  color: #6b665e;
+  font-size: 0.88rem;
+}
+
+#lesson-list li.unit-header {
+  background: none;
+  padding: 1rem 0 0.4rem;
+  font-size: 1rem;
+  color: var(--accent);
+  border-bottom: 1px solid #e5e0d6;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+#lesson-list li.unit-header .unit-progress {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: normal;
+}
+
+#lesson-list li.lesson-item.review-item {
+  background: linear-gradient(90deg, #fff9e6, #fff);
+  border-left-color: #e6b800;
+  margin-bottom: 1.2rem;
+}
+
+#lesson-list li.lesson-item.review-item.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f4f0e6;
+}
+
+#lesson-list li.lesson-item.review-item.locked::after {
+  content: " 🔒";
+}
+
+.file-label { display: inline-block; }
+.btn-like {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+#sheet-display {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1rem;
+  min-height: 200px;
+  overflow-x: auto;
+}
+
+#sheet-keyboard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.5rem;
+  margin-top: 1rem;
+  overflow-x: auto;
+}
+
+.osmd-highlight { fill: #d64933 !important; stroke: #d64933 !important; }
+
+/* ---------- Ritme tab ---------- */
+.rhythm-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 1rem 0;
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.rhythm-row {
+  display: flex;
+  gap: 3px;
+}
+
+.rhythm-cell {
+  flex: 1;
+  height: 28px;
+  border-radius: 4px;
+  background: #f0ece4;
+}
+
+.rhythm-cell.beat {
+  background: var(--fg);
+}
+
+.rhythm-cell.beat.ok {
+  background: var(--key-correct);
+}
+
+.rhythm-cell.beat.miss {
+  background: var(--key-wrong);
+}
+
+.rhy-tap-area {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.rhy-tap-btn {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  font-size: 1.6rem;
+  font-weight: 700;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.05s, background 0.05s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.rhy-tap-btn.tapped {
+  transform: scale(0.92);
+  background: #b33a26;
+}
+
+.rhythm-feedback {
+  font-size: 0.95rem;
+  min-height: 1.4rem;
+  padding: 0.4rem 0;
+  color: var(--muted);
+}
+
+#rhy-bpm { width: 140px; vertical-align: middle; }
+
+/* ---------- Muziekstijlen tab ---------- */
+.styles-nav {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.style-nav-btn {
+  background: #fff;
+  color: var(--fg);
+  border: 2px solid #e5e0d6;
+  border-radius: 20px;
+  padding: 0.45rem 1rem;
+  font-size: 0.9rem;
+  min-height: 36px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.style-nav-btn.active {
+  border-color: var(--style-color, var(--accent));
+  background: var(--style-color, var(--accent));
+  color: #fff;
+}
+
+.style-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.2rem;
+}
+
+.style-header {
+  border-left: 5px solid var(--accent);
+  padding-left: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.style-period {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.style-section {
+  margin-bottom: 1rem;
+}
+
+.style-section h3 {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 0 0 0.4rem;
+}
+
+.style-section ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.style-section li {
+  margin-bottom: 0.3rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.style-tips li {
+  color: var(--accent);
+}
+
+.style-demo {
+  margin-top: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid #e5e0d6;
+}
+
+/* ---------- Duet tab ---------- */
+#duet-keyboard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+
+/* ---------- Omkeringen tab ---------- */
+#inv-keyboard, #inv-drill-keyboard, #inv-vl-keyboard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  overflow-x: auto;
+}
+
+/* ---------- Kwintencirkel tab ---------- */
+.circle-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.circle-info {
+  margin-top: 0;
+}
+
+#circle-keyboard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.5rem;
+  margin: 0.75rem 0 0.5rem;
+  overflow-x: auto;
+}
+
+/* ---------- Transpositie tab ---------- */
+.tp-interval-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 0.6rem 0 0.4rem;
+  min-height: 1.4rem;
+}
+
+#tp-staff {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem 0.5rem;
+  margin-bottom: 0.5rem;
+  min-height: 120px;
+  overflow-x: auto;
+}
+
+#tp-keyboard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+
+/* ---------- Lead Sheet tab ---------- */
+.chord-display {
+  text-align: center;
+  padding: 1.5rem 1rem 1rem;
+}
+
+.chord-symbol-big {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--fg);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.chord-name-sub {
+  font-size: 1rem;
+  color: var(--muted);
+  margin-top: 0.3rem;
+}
+
+.chord-intervals {
+  font-size: 0.9rem;
+  color: var(--accent);
+  margin-top: 0.4rem;
+  font-family: monospace;
+  letter-spacing: 0.05em;
+}
+
+#ch-keyboard, #ch-drill-keyboard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  overflow-x: auto;
+}
+
+/* ---------- Dictee tab ---------- */
+#dic-keyboard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+
+#dic-notes-reveal {
+  margin-top: 0.8rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.03em;
+}
+
+#dic-bpm { width: 140px; vertical-align: middle; }
+
+/* ---------- Bladlezen tab ---------- */
+#sr-staff, #sr-keyboard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  min-height: 120px;
+}
+
+#sr-bpm { width: 140px; vertical-align: middle; }
+
+/* ---------- Techniek tab ---------- */
+#tech-staff, #tech-keyboard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+
+#tech-name { color: var(--accent); }
+#tech-bpm { width: 140px; vertical-align: middle; }
+
+/* ---------- Gehoor tab ---------- */
+.ear-mode-switch {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.ear-mode-switch button {
+  flex: 1;
+  background: #fff;
+  color: var(--fg);
+  border: 1px solid #e5e0d6;
+}
+
+.ear-mode-switch button.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.ear-panel {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.ear-main {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.big-btn {
+  font-size: 1.1rem;
+  padding: 1rem 1.8rem;
+  min-height: 56px;
+}
+
+.ear-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.5rem;
+  margin-top: 1.2rem;
+}
+
+.ear-option {
+  background: #faf8f4;
+  color: var(--fg);
+  border: 2px solid #e5e0d6;
+  padding: 0.9rem 0.6rem;
+  font-size: 0.95rem;
+}
+
+.ear-option:hover {
+  border-color: var(--accent);
+}
+
+.ear-feedback {
+  margin-top: 1rem;
+  font-size: 1rem;
+  min-height: 1.4rem;
+  color: var(--muted);
+}
+
+.ear-feedback.correct { color: #2a9d4f; font-weight: 600; }
+.ear-feedback.wrong   { color: #c23b22; font-weight: 600; }
+
+/* ---------- Metronoom tab ---------- */
+.metro-container {
+  background: #fff;
+  border-radius: 16px;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.metro-display {
+  margin-bottom: 1.5rem;
+}
+
+.metro-beats {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-bottom: 1.2rem;
+}
+
+.beat-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #e5e0d6;
+  transition: transform 0.08s ease-out, background 0.08s;
+}
+
+.beat-dot.first {
+  border: 2px solid var(--accent);
+}
+
+.beat-dot.active {
+  background: var(--accent);
+  transform: scale(1.35);
+}
+
+.beat-dot.active.accent {
+  background: #e6b800;
+  transform: scale(1.5);
+}
+
+.metro-bpm-display {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.metro-bpm-display small {
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-weight: normal;
+  letter-spacing: 1px;
+}
+
+#metro-bpm { width: 260px; max-width: 80%; vertical-align: middle; }
+
+/* ---------- Theorie tab ---------- */
+.theory-chords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.chord-chip {
+  background: #faf8f4;
+  color: var(--fg);
+  border: 2px solid #e5e0d6;
+  border-radius: 10px;
+  padding: 0.8rem 1.2rem;
+  font-size: 1.1rem;
+  min-width: 60px;
+  cursor: pointer;
+}
+
+.chord-chip:hover {
+  border-color: var(--accent);
+}
+
+.chord-chip.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  transform: scale(1.05);
+}
+
+#theory-keyboard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  overflow-x: auto;
+}
+
+.quiz-question {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+  padding: 0 0.5rem;
+}
+
+.ear-option.correct {
+  background: var(--key-correct);
+  color: #1c1a17;
+  border-color: #2a9d4f;
+}
+
+.ear-option.wrong {
+  background: var(--key-wrong);
+  color: #1c1a17;
+  border-color: #c23b22;
+}
+
+/* ============================================================
+   BOTTOM NAVIGATION — iOS 26 Liquid Glass floating pill
+   ============================================================ */
+
+#bottom-nav {
+  position: fixed;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  left: 16px;
+  right: 16px;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  border-radius: 999px;
+  border: 0.5px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.10),
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  display: flex;
+  z-index: 100;
+  padding: 0 12px;
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+  background: none;
+  border: none;
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0.4rem 0;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 999px;
+}
+
+.nav-item .nav-icon {
+  font-size: 1.35rem;
+  line-height: 1;
+  transition: transform 0.15s;
+}
+
+.nav-item.active {
+  color: var(--accent);
+}
+
+.nav-item.active .nav-icon {
+  transform: scale(1.08);
+}
+
+/* ============================================================
+   MAIN SECTIONS (replace flat tab system)
+   ============================================================ */
+
+.main-section {
+  display: block;
+  padding-bottom: calc(64px + env(safe-area-inset-bottom) + 24px);
+  min-height: 100vh;
+}
+
+/* ============================================================
+   DASHBOARD — iOS 26 glass cards
+   ============================================================ */
+
+.dash-progress-card {
+  margin: 1rem 1rem 0.75rem;
+  padding: 1.4rem 1.4rem 1.2rem;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 20px;
+  border: 0.5px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.dash-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: var(--muted);
+  margin: 0 0 0.75rem;
+}
+
+.dash-bar {
+  height: 6px;
+  background: rgba(0,0,0,0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.dash-bar-fill {
+  height: 100%;
+  background: var(--key-correct);
+  border-radius: 999px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 0%;
+}
+
+.dash-count {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 0.6rem 0 0;
+}
+
+.dash-next-card {
+  margin: 0 1rem 0.75rem;
+  padding: 1.1rem 1.4rem;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 8px 24px rgba(214,73,51,0.28), 0 2px 6px rgba(214,73,51,0.16);
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+
+.dash-next-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 4px 12px rgba(214,73,51,0.22);
+}
+
+.dash-next-title {
+  font-size: 0.68rem;
+  opacity: 0.82;
+  margin: 0 0 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-weight: 600;
+}
+
+.dash-next-lesson {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.dash-next-arrow {
+  font-size: 1.3rem;
+  opacity: 0.75;
+}
+
+.dash-done-card {
+  margin: 0 1rem 0.75rem;
+  padding: 1rem 1.4rem;
+  background: var(--key-correct);
+  color: #1c1a17;
+  border-radius: 20px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.section-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: var(--muted);
+  margin: 0 1rem 0.6rem;
+  padding-top: 0.75rem;
+}
+
+/* ============================================================
+   TOOL GRID — iOS 26 glass cards
+   ============================================================ */
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  padding: 0 1rem 1rem;
+}
+
+.tool-card {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 0.5px solid rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  padding: 1.1rem 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  transition: transform 0.12s, box-shadow 0.12s;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.tool-card:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.tool-card-icon {
+  font-size: 1.7rem;
+  line-height: 1;
+  margin-bottom: 0.1rem;
+}
+
+.tool-card-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--fg);
+  letter-spacing: -0.01em;
+}
+
+.tool-card-desc {
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+/* ============================================================
+   HEADER LAYOUT
+   ============================================================ */
+
+#header-main {
+  display: flex;
+  align-items: center;
+}
+
+/* ============================================================
+   TOOL BACK BAR (sits inside <header>, replaces h1 row)
+   ============================================================ */
+
+#tool-back-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+#tool-back-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  margin-left: -0.5rem;
+}
+
+#tool-back-btn:hover {
+  background: var(--accent-soft);
+}
+
+#tool-back-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+/* ============================================================
+   LESSON UNIT BADGES & PROGRESS — iOS 26
+   ============================================================ */
+
+.unit-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.unit-badge {
+  font-size: 0.62rem;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.unit-badge.done {
+  background: rgba(123, 211, 137, 0.25);
+  color: #2a7d3a;
+}
+
+.unit-badge.doing {
+  background: rgba(214, 73, 51, 0.12);
+  color: var(--accent);
+}
+
+.unit-badge.locked {
+  background: rgba(0,0,0,0.06);
+  color: var(--muted);
+}
+
+.unit-progress-bar {
+  height: 4px;
+  background: rgba(0,0,0,0.07);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.9rem;
+}
+
+.unit-progress-fill {
+  height: 100%;
+  background: var(--key-correct);
+  border-radius: 999px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Next-lesson highlight — iOS accent glow */
+.lesson-item.next-lesson {
+  background: var(--accent);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 6px 20px rgba(214,73,51,0.25);
+}
+
+.lesson-item.next-lesson .lesson-goal,
+.lesson-item.next-lesson small {
+  color: rgba(255,255,255,0.8);
+}
+
+/* Chevron on lesson items */
+.lesson-item-chevron {
+  margin-left: auto;
+  opacity: 0.35;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.lesson-item.next-lesson .lesson-item-chevron {
+  opacity: 0.85;
+}
+
+/* ============================================================
+   LESSON COMPLETE OVERLAY — iOS 26 glass sheet
+   ============================================================ */
+
+#lesson-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 26, 23, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 0 calc(12px + env(safe-area-inset-bottom));
+}
+
+.lc-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  border-radius: 28px 28px 28px 28px;
+  border: 0.5px solid rgba(255,255,255,0.95);
+  padding: 2rem 1.8rem 1.6rem;
+  width: calc(100% - 32px);
+  max-width: 420px;
+  box-shadow: 0 -4px 48px rgba(0,0,0,0.14), 0 24px 48px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.lc-icon {
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  background: var(--key-correct);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #1c1a17;
+  margin-bottom: 0.3rem;
+  box-shadow: 0 4px 16px rgba(123, 211, 137, 0.4);
+}
+
+#lc-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+#lc-goal {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0 0 0.6rem;
+}
+
+.lc-recs-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  margin: 0.4rem 0 0.2rem;
+}
+
+#lc-recs {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+#lc-back {
+  margin-top: 0.6rem;
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+/* ============================================================
+   HEADER HIDE when bottom-nav is active
+   ============================================================ */
+
+body.main-nav-active header nav#tabs {
+  display: none;
+}
+
+/* Lessons sub-nav (Lessen | Liedjes) — iOS 26 glass pills */
+.lessons-subnav {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.9rem 1rem 0.25rem;
+}
+
+.lessons-sub-btn {
+  background: rgba(0,0,0,0.06);
+  border: none;
+  border-radius: 999px;
+  padding: 0.45rem 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.lessons-sub-btn.active {
+  background: var(--fg);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* main-section needs padding at top on first section-label */
+.main-section > .section-label:first-child {
+  padding-top: 1rem;
+}
