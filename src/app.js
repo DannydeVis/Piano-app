@@ -275,6 +275,9 @@ function updateSongView() {
   songProgressEl.textContent = `${songIndex} / ${midis.length}`;
 }
 
+// Bijhoudt welke les via een liedje actief is — wordt gezet door startLesson()
+let _pendingLesson = null;
+
 function onSongNote(info) {
   if (!songActive || !currentSong) return;
   const expected = nameToMidi(currentSong.notes[songIndex]);
@@ -285,6 +288,14 @@ function onSongNote(info) {
       songStartBtn.textContent = "Opnieuw";
       songProgressEl.textContent = `✓ Klaar! "${currentSong.title}" uitgespeeld.`;
       songIndex = 0;
+      // Markeer les als voltooid — alleen nu het liedje écht af is
+      if (_pendingLesson) {
+        const lesson = _pendingLesson;
+        _pendingLesson = null;
+        markDone(lesson.id);
+        renderLessons();
+        setTimeout(() => showLessonComplete(lesson), 600);
+      }
     }
     updateSongView();
   }
@@ -520,40 +531,83 @@ renderDashboard();
 
 function startLesson(lesson) {
   if (lesson.drill.type === "song") {
-    // Schakel naar songs-tab en open het betreffende liedje
+    // Schakel naar songs-tab — markeer NIET bij start, maar via _pendingLesson
+    _pendingLesson = lesson;
     switchToMain("lessons");
     document.querySelectorAll(".lessons-sub-btn").forEach((b) => b.classList.toggle("active", b.dataset.sub === "songs"));
     document.querySelector('#tabs button[data-tab="songs"]').click();
     openSong(lesson.drill.songId);
-    // Automatisch markeren als gedaan zodra liedje wordt uitgespeeld — simpel: markeer bij start.
-    markDone(lesson.id);
   } else {
-    // Noten-oefening: gebruik de learn-tab met een gefixeerde set
+    // Noten-oefening: gebruik de learn-tab
     openTool("learn", "lessons", "Noot leren");
     const midis = lesson.drill.notes.map(nameToMidi);
     const min = Math.max(21, Math.min(...midis) - 2);
     const max = Math.min(108, Math.max(...midis) + 2);
     learnKb.setRange(min, max);
-    // sequence → exacte volgorde; notes → willekeurige volgorde
+
+    // Sequence = vaste volgorde (toonladder): 2 rondes
+    // Notes = willekeurig: 3 rondes
+    const ROUNDS_NEEDED = lesson.drill.type === "sequence" ? 2 : 3;
+    let roundsDone = 0;
     let idx = 0;
-    const order = lesson.drill.type === "sequence"
+    let order = lesson.drill.type === "sequence"
       ? [...midis]
       : [...midis].sort(() => Math.random() - 0.5);
+
+    // Toon les-modus balk
+    const lmBar = document.getElementById("lesson-mode-bar");
+    const lmTitle = document.getElementById("lmb-title");
+    const lmRoundsText = document.getElementById("lmb-rounds-text");
+    const lmDots = document.getElementById("lmb-dots");
+    lmBar.hidden = false;
+    lmTitle.textContent = lesson.title;
+
+    function updateRoundUI() {
+      lmRoundsText.textContent = `Ronde ${roundsDone + 1} / ${ROUNDS_NEEDED}`;
+      lmDots.innerHTML = Array.from({ length: ROUNDS_NEEDED }, (_, i) =>
+        `<span class="lmb-dot ${i < roundsDone ? "done" : i === roundsDone ? "active" : ""}"></span>`
+      ).join("");
+    }
+
+    function endLesson() {
+      lmBar.hidden = true;
+      markDone(lesson.id);
+      renderLessons();
+      showLessonComplete(lesson);
+      setListener(onLearnNote);
+      pickNote();
+    }
+
     const runNext = () => {
       if (idx >= order.length) {
-        markDone(lesson.id);
-        renderLessons();
-        showLessonComplete(lesson);
-        // terug naar standaard learn-modus
-        setListener(onLearnNote);
-        pickNote();
+        roundsDone++;
+        if (roundsDone >= ROUNDS_NEEDED) {
+          endLesson();
+          return;
+        }
+        // Volgende ronde — schud opnieuw als willekeurig
+        idx = 0;
+        if (lesson.drill.type !== "sequence") {
+          order.sort(() => Math.random() - 0.5);
+        }
+        updateRoundUI();
+        runNext();
         return;
       }
+      updateRoundUI();
       targetMidi = order[idx];
       learnKb.clearHighlights();
       learnKb.highlight(targetMidi, "target");
       learnStaff.showNote(targetMidi);
     };
+
+    // Annuleer-knop
+    document.getElementById("lesson-mode-cancel").onclick = () => {
+      lmBar.hidden = true;
+      setListener(onLearnNote);
+      pickNote();
+    };
+
     setListener((info) => {
       if (info.midi === order[idx]) {
         learnKb.highlight(order[idx], "correct");
@@ -564,6 +618,8 @@ function startLesson(lesson) {
         setTimeout(() => learnKb.unhighlight(info.midi), 400);
       }
     });
+
+    updateRoundUI();
     runNext();
   }
 }
