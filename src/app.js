@@ -256,6 +256,24 @@ function openSong(id) {
   songTitleEl.textContent = currentSong.title;
   songListEl.hidden = true;
   songPlayerEl.hidden = false;
+
+  // Bereik: C4 altijd links als ankerpunt, uitbreiden tot minstens C5
+  const midis = currentSong.notes.map(nameToMidi);
+  const C4 = nameToMidi("C4");
+  const C5 = nameToMidi("C5");
+  const rangeMin = Math.max(21, Math.min(C4, Math.min(...midis) - 1));
+  const rangeMax = Math.min(108, Math.max(C5, Math.max(...midis) + 2));
+  songKb.setRange(rangeMin, rangeMax);
+
+  // C-positie vingerzetting rechterhand: C4=1 D4=2 E4=3 F4=4 G4=5
+  songKb.setFingerings(new Map([
+    [C4,     1],
+    [C4 + 2, 2],  // D4
+    [C4 + 4, 3],  // E4
+    [C4 + 5, 4],  // F4
+    [C4 + 7, 5],  // G4
+  ]));
+
   updateSongView();
 }
 
@@ -269,9 +287,7 @@ function closeSong() {
 function updateSongView() {
   if (!currentSong) return;
   const midis = currentSong.notes.map(nameToMidi);
-  const min = Math.min(...midis) - 2;
-  const max = Math.max(...midis) + 2;
-  songKb.setRange(Math.max(21, min), Math.min(108, max));
+  // Bereik wordt eenmalig in openSong() ingesteld — hier niet opnieuw aanpassen
   songKb.clearHighlights();
   if (songIndex < midis.length) songKb.highlight(midis[songIndex], "target");
   songStaff.showSequence(midis, songIndex);
