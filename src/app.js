@@ -40,6 +40,9 @@ function switchToMain(name) {
   _currentMain = name;
   _currentTool = null;
 
+  // Home-class op body (transparante header + geen dubbele titel)
+  document.body.classList.toggle("on-home", name === "home");
+
   // Verberg alle tool-panelen
   document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
 
@@ -526,7 +529,8 @@ function renderDashboard() {
   });
 }
 
-// Initieel dashboard renderen
+// Initieel dashboard renderen + home-class op body
+document.body.classList.add("on-home");
 renderDashboard();
 
 function startLesson(lesson) {

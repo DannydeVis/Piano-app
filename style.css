@@ -949,10 +949,15 @@ button.ghost {
 
 .home-hero {
   background: linear-gradient(160deg, #1a0a06 0%, #7a2518 40%, #d64933 100%);
-  padding: 2rem 1.5rem 2.8rem;
+  padding: 2.4rem 1.5rem 2.8rem;
   position: relative;
   overflow: hidden;
   margin-bottom: 0;
+  /* Break out of max-width container → full bleed */
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding-left: max(1.5rem, calc(50vw - 450px));
+  padding-right: max(1.5rem, calc(50vw - 450px));
 }
 
 /* decoratieve cirkels in de hero */
@@ -1016,7 +1021,7 @@ button.ghost {
 }
 
 .dash-next-card {
-  margin: -1.2rem 1rem 0.75rem;
+  margin: 0.9rem 1rem 0.75rem;
   padding: 1.1rem 1.4rem;
   background: var(--accent);
   color: #fff;
@@ -1468,4 +1473,25 @@ body.main-nav-active header nav#tabs {
 /* main-section needs padding at top on first section-label */
 .main-section > .section-label:first-child {
   padding-top: 1rem;
+}
+
+/* Op home: verberg de header-titel (hero heeft eigen grote titel) */
+body.on-home #header-main {
+  display: none;
+}
+
+/* Header is transparant boven de hero op home */
+body.on-home header {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: none;
+  position: absolute;
+  left: 0; right: 0;
+  z-index: 20;
+}
+
+/* Hero krijgt ruimte voor de transparante header */
+body.on-home .home-hero {
+  padding-top: calc(env(safe-area-inset-top) + 3.5rem);
 }
