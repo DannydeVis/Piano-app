@@ -220,11 +220,28 @@ let songActive = false;
 
 function renderSongList() {
   songListEl.innerHTML = "";
+  // Groepeer per moeilijkheidsgraad
+  const byLevel = {};
   SONGS.forEach((s) => {
-    const li = document.createElement("li");
-    li.innerHTML = `<span>${s.title}</span><span class="difficulty">niveau ${s.difficulty}</span>`;
-    li.addEventListener("click", () => openSong(s.id));
-    songListEl.appendChild(li);
+    if (!byLevel[s.difficulty]) byLevel[s.difficulty] = [];
+    byLevel[s.difficulty].push(s);
+  });
+  const levelLabels = { 1: "Beginner", 2: "Makkelijk", 3: "Gemiddeld", 4: "Gevorderd", 5: "Moeilijk" };
+  Object.keys(byLevel).sort().forEach((lvl) => {
+    const group = document.createElement("li");
+    group.style.listStyle = "none";
+    group.style.padding = "0";
+    group.innerHTML = `<div class="unit-section-label" style="padding:0 6px 7px;display:flex;justify-content:space-between"><span>${levelLabels[lvl] || "Niveau " + lvl}</span></div>`;
+    const body = document.createElement("div");
+    body.className = "song-group";
+    byLevel[lvl].forEach((s) => {
+      const row = document.createElement("li");
+      row.innerHTML = `<span>${s.title}</span><span class="difficulty">♩ ${s.difficulty}</span>`;
+      row.addEventListener("click", () => openSong(s.id));
+      body.appendChild(row);
+    });
+    group.appendChild(body);
+    songListEl.appendChild(group);
   });
 }
 renderSongList();
@@ -348,7 +365,6 @@ function renderLessons() {
   const progress = getProgress();
   lessonListEl.innerHTML = "";
 
-  // Vind de eerste onafgeronde les (voor "next-lesson" highlight)
   const allLessons = UNITS.flatMap((u) => u.lessons);
   const nextLessonId = allLessons.find((l) => !progress[l.id])?.id;
 
@@ -356,60 +372,68 @@ function renderLessons() {
     const doneInUnit = unit.lessons.filter((l) => progress[l.id]).length;
     const totalInUnit = unit.lessons.length;
     const unitAllDone = doneInUnit === totalInUnit;
-    const unitStarted = doneInUnit > 0;
-    const badgeClass = unitAllDone ? "done" : unitStarted ? "doing" : "locked";
-    const badgeLabel = unitAllDone ? "Klaar" : unitStarted ? "Bezig" : "Nieuw";
     const pct = Math.round((doneInUnit / totalInUnit) * 100);
 
-    const header = document.createElement("li");
-    header.className = "unit-header";
-    header.innerHTML = `
-      <div class="unit-header-row">
-        <strong>${unit.title}</strong>
-        <span class="unit-badge ${badgeClass}">${badgeLabel}</span>
-      </div>
-      <div class="unit-progress-bar">
-        <div class="unit-progress-fill" style="width:${pct}%"></div>
-      </div>`;
-    lessonListEl.appendChild(header);
+    // Unit section container
+    const section = document.createElement("div");
+    section.className = "unit-section";
 
-    unit.lessons.forEach((l) => {
-      const li = document.createElement("li");
-      li.className = "lesson-item";
-      if (progress[l.id]) li.classList.add("done");
-      if (l.id === nextLessonId) li.classList.add("next-lesson");
-      li.innerHTML = `
-        <div>
-          <strong>${l.title}</strong><br>
-          <span class="lesson-goal">${l.goal}</span>
+    // iOS section label (small caps, above the group)
+    const labelEl = document.createElement("div");
+    labelEl.className = "unit-section-label";
+    labelEl.innerHTML = `<span>${unit.title}</span><span class="unit-section-pct">${pct}%</span>`;
+    section.appendChild(labelEl);
+
+    // Grouped body card
+    const body = document.createElement("div");
+    body.className = "unit-section-body";
+
+    // Alle lessen + optionele review
+    const review = buildUnitReview(unit);
+    const allRows = [...unit.lessons, ...(review ? [review] : [])];
+
+    allRows.forEach((l) => {
+      const isReview = l === review;
+      const isDone = !!progress[l.id];
+      const isNext = l.id === nextLessonId;
+      const isLocked = isReview && !unitAllDone;
+
+      const row = document.createElement("div");
+      row.className = "lesson-item";
+      if (isDone) row.classList.add("done");
+      if (isNext) row.classList.add("next-lesson");
+      if (isLocked) row.classList.add("locked");
+
+      // Icon
+      let iconHtml;
+      if (isDone) {
+        iconHtml = `<span class="lesson-check">✓</span>`;
+      } else if (isReview) {
+        iconHtml = `<span class="lesson-star">★</span>`;
+      } else if (isNext) {
+        iconHtml = `<span class="lesson-dot-next"></span>`;
+      } else {
+        iconHtml = `<span class="lesson-dot"></span>`;
+      }
+
+      row.innerHTML = `
+        <div class="lesson-item-icon">${iconHtml}</div>
+        <div class="lesson-item-text">
+          <div class="lesson-item-title">${l.title}</div>
+          <div class="lesson-item-goal">${l.goal}</div>
         </div>
         <span class="lesson-item-chevron">›</span>`;
-      li.addEventListener("click", () => startLesson(l));
-      lessonListEl.appendChild(li);
+
+      row.addEventListener("click", () => {
+        if (isLocked) return;
+        startLesson(l);
+      });
+
+      body.appendChild(row);
     });
 
-    // Oefen-batterij onderaan elke unit
-    const review = buildUnitReview(unit);
-    if (review) {
-      const li = document.createElement("li");
-      li.className = "lesson-item review-item";
-      if (progress[review.id]) li.classList.add("done");
-      if (!unitAllDone) li.classList.add("locked");
-      li.innerHTML = `
-        <div>
-          <strong>${review.title}</strong><br>
-          <span class="lesson-goal">${review.goal}</span>
-        </div>
-        <span class="lesson-item-chevron">›</span>`;
-      li.addEventListener("click", () => {
-        if (!unitAllDone) {
-          alert("Voltooi eerst alle lessen in deze unit.");
-          return;
-        }
-        startLesson(review);
-      });
-      lessonListEl.appendChild(li);
-    }
+    section.appendChild(body);
+    lessonListEl.appendChild(section);
   });
 }
 renderLessons();

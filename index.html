@@ -49,6 +49,7 @@
          MAIN HOME — Dashboard
          ==================================================== -->
     <section id="main-home" class="main-section">
+      <h2 class="page-title">Piano Leren</h2>
       <div class="dash-progress-card">
         <p class="dash-label">Jouw voortgang</p>
         <div class="dash-bar"><div id="dash-bar-fill" class="dash-bar-fill"></div></div>
@@ -65,16 +66,18 @@
          MAIN LESSONS — Lessen + Liedjes
          ==================================================== -->
     <section id="main-lessons" class="main-section" hidden>
+      <h2 class="page-title">Lessen</h2>
       <div class="lessons-subnav">
         <button class="lessons-sub-btn active" data-sub="lessons">📖 Lessen</button>
         <button class="lessons-sub-btn" data-sub="songs">🎵 Liedjes</button>
       </div>
 
       <section id="tab-lessons" class="tab active">
-        <ol id="lesson-list"></ol>
+        <div id="lesson-list"></div>
       </section>
 
       <section id="tab-songs" class="tab">
+        <p class="page-title" style="padding-bottom:0.5rem">Liedjes</p>
         <ul id="song-list"></ul>
         <div id="song-player" hidden>
           <button id="song-back">← Terug</button>
@@ -93,7 +96,7 @@
          MAIN PRACTICE — Oefenen tool-grid
          ==================================================== -->
     <section id="main-practice" class="main-section" hidden>
-      <p class="section-label">Oefenen</p>
+      <h2 class="page-title">Oefenen</h2>
       <div id="practice-grid" class="tool-grid">
         <div class="tool-card" data-tool="learn" data-from="practice">
           <span class="tool-card-icon">🎹</span>
@@ -142,7 +145,7 @@
          MAIN TOOLS — Gereedschap tool-grid
          ==================================================== -->
     <section id="main-tools" class="main-section" hidden>
-      <p class="section-label">Gereedschap</p>
+      <h2 class="page-title">Gereedschap</h2>
       <div id="tools-grid" class="tool-grid">
         <div class="tool-card" data-tool="metro" data-from="tools">
           <span class="tool-card-icon">⏱️</span>
