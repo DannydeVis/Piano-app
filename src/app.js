@@ -466,10 +466,12 @@ function renderDashboard() {
   const doneCount = allLessons.filter((l) => progress[l.id]).length;
   const totalCount = allLessons.length;
 
-  // Progress bar
+  // Hero progress bar
   const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
-  document.getElementById("dash-bar-fill").style.width = pct + "%";
-  document.getElementById("dash-count").textContent = `${doneCount} van de ${totalCount} lessen voltooid`;
+  const fillEl = document.getElementById("dash-bar-fill");
+  if (fillEl) fillEl.style.width = pct + "%";
+  const countEl = document.getElementById("dash-count");
+  if (countEl) countEl.textContent = `${doneCount} van de ${totalCount} lessen voltooid`;
 
   // Volgende les
   const nextLesson = allLessons.find((l) => !progress[l.id]);

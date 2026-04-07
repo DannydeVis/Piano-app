@@ -21,12 +21,7 @@
 html, body {
   margin: 0;
   padding: 0;
-  background:
-    radial-gradient(ellipse 80% 55% at 10% -5%,  rgba(175, 82, 222, 0.22) 0%, transparent 55%),
-    radial-gradient(ellipse 65% 70% at 95% 105%, rgba(52, 199, 89,  0.18) 0%, transparent 55%),
-    radial-gradient(ellipse 90% 45% at 60%  55%, rgba(214, 73, 51,  0.10) 0%, transparent 60%),
-    #ede9e4;
-  background-attachment: fixed;
+  background: #e8e4df;
   color: var(--fg);
   min-height: 100vh;
   -webkit-tap-highlight-color: transparent;
@@ -949,52 +944,79 @@ button.ghost {
 }
 
 /* ============================================================
-   DASHBOARD — iOS 26 glass cards
+   DASHBOARD — hero banner + cards
    ============================================================ */
 
-.dash-progress-card {
-  margin: 1rem 1rem 0.75rem;
-  padding: 1.4rem 1.4rem 1.2rem;
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-radius: 20px;
-  border: 0.5px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+.home-hero {
+  background: linear-gradient(160deg, #1a0a06 0%, #7a2518 40%, #d64933 100%);
+  padding: 2rem 1.5rem 2.8rem;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 0;
 }
 
-.dash-label {
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+/* decoratieve cirkels in de hero */
+.home-hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -40px;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  pointer-events: none;
+}
+.home-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -50px; left: -30px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  pointer-events: none;
+}
+
+.home-hero-sub {
+  font-size: 0.78rem;
   font-weight: 600;
-  color: var(--muted);
-  margin: 0 0 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  margin: 0 0 0.35rem;
 }
 
-.dash-bar {
-  height: 6px;
-  background: rgba(0,0,0,0.08);
+.home-hero-title {
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #fff;
+  margin: 0 0 1.4rem;
+  line-height: 1.05;
+}
+
+.home-hero-bar {
+  height: 5px;
+  background: rgba(255,255,255,0.2);
   border-radius: 999px;
   overflow: hidden;
+  margin-bottom: 0.45rem;
 }
 
-.dash-bar-fill {
+.home-hero-bar-fill {
   height: 100%;
-  background: var(--key-correct);
+  background: rgba(255,255,255,0.85);
   border-radius: 999px;
   transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   width: 0%;
 }
 
-.dash-count {
-  font-size: 0.82rem;
-  color: var(--muted);
-  margin: 0.6rem 0 0;
+.home-hero-count {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.6);
+  margin: 0;
 }
 
 .dash-next-card {
-  margin: 0 1rem 0.75rem;
+  margin: -1.2rem 1rem 0.75rem;
   padding: 1.1rem 1.4rem;
   background: var(--accent);
   color: #fff;
