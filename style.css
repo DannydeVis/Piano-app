@@ -21,10 +21,11 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: #f0ede8;
-  background-image:
-    radial-gradient(ellipse at 20% 10%, rgba(214,73,51,0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(123,211,137,0.07) 0%, transparent 50%);
+  background:
+    radial-gradient(ellipse 80% 55% at 10% -5%,  rgba(175, 82, 222, 0.22) 0%, transparent 55%),
+    radial-gradient(ellipse 65% 70% at 95% 105%, rgba(52, 199, 89,  0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 90% 45% at 60%  55%, rgba(214, 73, 51,  0.10) 0%, transparent 60%),
+    #ede9e4;
   background-attachment: fixed;
   color: var(--fg);
   min-height: 100vh;
@@ -263,12 +264,12 @@ button.ghost {
 
 /* The grouped card that wraps all rows */
 .unit-section-body {
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
   border-radius: 14px;
   border: 0.5px solid rgba(255, 255, 255, 0.95);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
   overflow: hidden;
 }
 
@@ -1064,31 +1065,55 @@ button.ghost {
 }
 
 .tool-card {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 0.5px solid rgba(255, 255, 255, 0.9);
-  border-radius: 20px;
-  padding: 1.1rem 1rem;
+  background: rgba(255, 255, 255, 0.68);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 0.5px solid rgba(255, 255, 255, 0.92);
+  border-radius: 22px;
+  padding: 1.1rem 1rem 1rem;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.04);
   transition: transform 0.12s, box-shadow 0.12s;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.35rem;
+  gap: 0;
 }
 
 .tool-card:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .tool-card-icon {
-  font-size: 1.7rem;
-  line-height: 1;
-  margin-bottom: 0.1rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.45rem;
+  margin-bottom: 0.55rem;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
+
+/* iOS app-icon kleuren per tool */
+.tool-card[data-tool="learn"]      .tool-card-icon { background: linear-gradient(145deg,#ff6b6b,#d64933); }
+.tool-card[data-tool="technique"]  .tool-card-icon { background: linear-gradient(145deg,#34c759,#28a745); }
+.tool-card[data-tool="ear"]        .tool-card-icon { background: linear-gradient(145deg,#af52de,#8e44ad); }
+.tool-card[data-tool="sightread"]  .tool-card-icon { background: linear-gradient(145deg,#007aff,#0051d4); }
+.tool-card[data-tool="rhythm"]     .tool-card-icon { background: linear-gradient(145deg,#ff9500,#e67e00); }
+.tool-card[data-tool="dictee"]     .tool-card-icon { background: linear-gradient(145deg,#ff6b35,#e55a2b); }
+.tool-card[data-tool="chords"]     .tool-card-icon { background: linear-gradient(145deg,#5856d6,#4040b8); }
+.tool-card[data-tool="duet"]       .tool-card-icon { background: linear-gradient(145deg,#ff2d55,#c0002e); }
+.tool-card[data-tool="metro"]      .tool-card-icon { background: linear-gradient(145deg,#636366,#3a3a3c); }
+.tool-card[data-tool="theory"]     .tool-card-icon { background: linear-gradient(145deg,#34aadc,#007aff); }
+.tool-card[data-tool="circle"]     .tool-card-icon { background: linear-gradient(145deg,#ffcc00,#ff9500); }
+.tool-card[data-tool="inversions"] .tool-card-icon { background: linear-gradient(145deg,#5856d6,#af52de); }
+.tool-card[data-tool="transpose"]  .tool-card-icon { background: linear-gradient(145deg,#32ade6,#0062b8); }
+.tool-card[data-tool="styles"]     .tool-card-icon { background: linear-gradient(145deg,#ff375f,#ff9500); }
+.tool-card[data-tool="sheet"]      .tool-card-icon { background: linear-gradient(145deg,#8e8e93,#636366); }
 
 .tool-card-name {
   font-size: 0.88rem;
